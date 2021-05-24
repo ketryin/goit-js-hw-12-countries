@@ -17,15 +17,17 @@ refs.inputEl.addEventListener('input', debounce(searchCountry, 500));
 
 function searchCountry(event) {
     const inputValue = event.target.value;
-    fetchCountries(inputValue)
-        .then(renderCountry);
+    if (inputValue != '') {
+        fetchCountries(inputValue)
+            .then(renderCountry);
+    }
     
     const itemsSearch = document.querySelectorAll('.list-searchCountry-items');
     const card = document.querySelector('.card');
 
     itemsSearch.forEach(item => item.remove());
 
-    if (card!=null) {
+    if (card != null) {
         card.remove();
     }
 }
