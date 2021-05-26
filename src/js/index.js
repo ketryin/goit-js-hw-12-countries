@@ -5,9 +5,8 @@ import fetchCountries from './fetchCountries';
 import getRefs from './get-refs';
 import debounce from 'lodash.debounce';
 
-import { alert, error, defaultModules } from '@pnotify/core';
-import * as PNotifyMobile from '@pnotify/mobile';
-import * as PNotifyDesktop from '@pnotify/desktop';
+import { notice, error, defaultModules } from '@pnotify/core';
+import * as PNotifyMobile from '@pnotify/mobile';;
 import '@pnotify/core/dist/BrightTheme.css';
 
 defaultModules.set(PNotifyMobile, {});
@@ -17,35 +16,34 @@ refs.inputEl.addEventListener('input', debounce(searchCountry, 500));
 
 function searchCountry(event) {
     const inputValue = event.target.value;
+    refs.cardContainer.innerHTML = '';
+
     if (inputValue != '') {
         fetchCountries(inputValue)
-            .then(renderCountry);
-    }
-    
-    const itemsSearch = document.querySelectorAll('.list-searchCountry-items');
-    const card = document.querySelector('.card');
-
-    itemsSearch.forEach(item => item.remove());
-
-    if (card != null) {
-        card.remove();
+            .then(renderCountry)
+            .catch(errorMessage);
     }
 }
 
 function renderCountry(countries) {
+    
     if (countries.length === 1) {
         const markup = countryCardTpl(countries[0]);
         refs.cardContainer.innerHTML = markup;
     } else if (countries.length >= 2 && countries.length <= 10) {
-        const markup2 = countries.map(listItemTpl).join('');
-        refs.listSearch.insertAdjacentHTML('afterbegin', markup2);
-
-
+        const markup2 = listItemTpl(countries);
+        refs.cardContainer.innerHTML = markup2;
     } else if (countries.length >10) {
-        error({
+        notice({
             title: 'Oh No!',
             text: 'Enter more characters'
         });
     }
 }
 
+function errorMessage() {
+    error({
+        title: 'Oh No!',
+        text: 'Invalid entered value. Try again'
+    });   
+}
